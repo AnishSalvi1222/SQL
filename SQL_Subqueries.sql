@@ -17,6 +17,7 @@ FROM (
 ) AS top_customers;
 
 
+
 2. Retrieve the names of customers who have placed orders in the past 30 days
 
 SELECT customer_name
@@ -26,6 +27,7 @@ WHERE customer_id IN (
     FROM Orders
     WHERE DATEDIFF(NOW(), order_date) <= 30
 );
+
 
 
 3. Find the products that has been ordered atleast three times
@@ -38,6 +40,7 @@ WHERE product_id IN (
     GROUP BY product_id
     HAVING COUNT(order_id) >= 3
 );
+
 
 
 4. Retrieve the order details for orders placed by customers from a specific city
@@ -55,6 +58,7 @@ WHERE order_id IN (
 );
 
 
+
 5. Retrieve the data for customers who have placed order for products with a price greater than 100 dollars
 
 SELECT customer_id, customer_name
@@ -67,4 +71,76 @@ WHERE customer_id IN (
     JOIN Products P ON OD.product_id = P.product_id
     WHERE P.price > 100
 );
+
+
+
+6. Get the average order amount for each customer
+
+SELECT
+    c.customer_id,
+    c.customer_name,
+    c.city,
+    (SELECT AVG(order_amount) FROM Orders o WHERE o.customer_id = c.customer_id) AS avg_order_amount
+FROM
+    Customers c;
+
+
+
+7. Find the products that have never been ordered.
+
+SELECT
+    product_id,
+    product_name
+FROM
+    Products
+WHERE
+    product_id NOT IN (SELECT DISTINCT product_id FROM Order_Items);
+
+
+
+8. Retrieve the names of the customers who have ordered on weekends
+
+SELECT DISTINCT
+    customer_name
+FROM
+    Customers
+WHERE
+    customer_id IN (
+        SELECT DISTINCT
+            o.customer_id
+        FROM
+            Orders o
+        WHERE
+            DATENAME(dw, o.order_date) IN ('Saturday', 'Sunday')
+    );
+
+
+
+9. Get the total order amount for each month
+
+SELECT
+    DISTINCT MONTH(order_date) AS Month,
+    (SELECT SUM(order_amount) FROM Orders o WHERE MONTH(o.order_date) = MONTH(Orders.order_date)) AS TotalOrderAmount
+FROM
+    Orders;
+
+
+
+10. Query to find the customer who has placed order for more that two different products.
+
+SELECT DISTINCT
+    c.customer_id,
+    c.customer_name
+FROM
+    Customers c
+WHERE
+    c.customer_id IN (
+        SELECT o.customer_id
+        FROM Orders o
+        JOIN Order_Items oi ON o.order_id = oi.order_id
+        GROUP BY o.customer_id
+        HAVING COUNT(DISTINCT oi.product_id) > 2
+    );
+         
+
 
