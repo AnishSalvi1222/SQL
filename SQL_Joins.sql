@@ -5,8 +5,7 @@ Dataset: Customers(customer_id, customer_name, city, country)
          Order_Items(order_id, product_id, quantity 
          Suppliers(supplier_id, supplier_name)
 
-
-1. Retrieve order details along with each order's customer name and product name.
+1. Retrieve order details along with each customer name and product name for each order
 
 SELECT
     o.order_id,
