@@ -1,5 +1,5 @@
 SQL_Joins
-Dataset: Customers(customer_id, customer_name, city, country)
+Dataset: Customers(customer_id, customer_name, city, country, occupation)
          Orders(order_id, customer_id, order_amount, order_date)
          Products(product_id, product_name, supplier_id)
          Order_Items(order_id, product_id, quantity 
@@ -81,3 +81,18 @@ JOIN
     Customers c ON o.customer_id = c.customer_id
 WHERE
     c.country = 'India';  
+
+
+6. Get the total order amount for each customer, including those who have not placed any orders
+
+SELECT
+    c.customer_id,
+    c.customer_name,
+    COALESCE(SUM(o.order_amount), 0) AS total_order_amount
+FROM
+    Customers c
+LEFT JOIN
+    Orders o ON c.customer_id = o.customer_id
+GROUP BY
+    c.customer_id, c.customer_name;
+
